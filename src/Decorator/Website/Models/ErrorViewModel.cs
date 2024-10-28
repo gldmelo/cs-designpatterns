@@ -1,4 +1,5 @@
-namespace DesignPatterns.Website.Models
+
+namespace DesignPatterns.Decorator.Website.Models
 {
 	public class ErrorViewModel
 	{

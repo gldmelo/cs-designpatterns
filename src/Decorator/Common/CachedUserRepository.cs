@@ -2,20 +2,11 @@
 
 namespace DesignPatterns.Decorator
 {
-	public class CachedUserRepository : IUserRepository
+	public class CachedUserRepository(IUserRepository userRepository, IMemoryCache localCache) : IUserRepository
 	{
-		IUserRepository _userRepository;
-		IMemoryCache _localCache { get; }
-
-		public CachedUserRepository(IUserRepository userRepository, IMemoryCache localCache)
-		{
-			_userRepository = userRepository;
-			_localCache = localCache;
-		}
-
 		public void AddUser(User user)
 		{
-			_userRepository.AddUser(user);
+			userRepository.AddUser(user);
 		}
 
 		/// <summary>
@@ -24,11 +15,11 @@ namespace DesignPatterns.Decorator
 		public User? FindById(int id)
 		{
 			// On real world implementations beware of the chosen Key to avoid collision and runtime errors
-			var cachedItem = _localCache.GetOrCreate("IUserRepository-FindById-" + id,
+			var cachedItem = localCache.GetOrCreate("IUserRepository-FindById-" + id,
 				cacheEntry =>
 				{
 					cacheEntry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1)); // Caches the result for a minute
-					return _userRepository.FindById(id);
+					return userRepository.FindById(id);
 				});
 
 			return cachedItem;
